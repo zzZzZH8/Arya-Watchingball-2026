@@ -1,0 +1,442 @@
+/* ==================== GLOBAL VARIABLES (CYBER AESTHETIC) ==================== */
+:root {
+    --primary: #00ff41;
+    /* Core Green */
+    --primary-dim: rgba(0, 255, 65, 0.1);
+    --bg-glass: rgba(5, 8, 10, 0.85);
+    /* Dark Frosted Base */
+    --border-light: rgba(255, 255, 255, 0.15);
+    --text-main: #e0e0e0;
+    --text-dim: #888;
+    --font-stack: 'Courier New', monospace;
+    --panel-w: 230px;
+    /* Slightly wider for text */
+}
+
+/* Base Settings */
+body,
+html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: transparent !important;
+    font-family: var(--font-stack);
+    user-select: none;
+    /* Prevent accidental text selection */
+}
+
+canvas {
+    display: block;
+    pointer-events: none;
+}
+
+/* ==================== Floating Controls (Drag & Lock) ==================== */
+#btn-lock {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    width: 32px;
+    height: 32px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(8px);
+    -webkit-app-region: no-drag;
+}
+
+#btn-lock:hover {
+    border-color: var(--primary);
+    box-shadow: 0 0 10px var(--primary-dim);
+}
+
+#btn-lock.locked-state {
+    border-color: #ff4444;
+    color: #ff4444;
+    background: rgba(50, 0, 0, 0.5);
+}
+
+#drag-handle {
+    position: fixed;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    cursor: grab;
+    z-index: 9999;
+    -webkit-app-region: drag;
+    transition: 0.3s;
+}
+
+#drag-handle:hover {
+    background: var(--primary);
+    box-shadow: 0 0 10px var(--primary);
+}
+
+#drag-handle .handle-icon {
+    display: none;
+}
+
+#sys-controls {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    z-index: 9999;
+    display: flex;
+    gap: 8px;
+}
+
+#sys-controls button {
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid var(--border-light);
+    color: #fff;
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+}
+
+#sys-controls button:hover {
+    background: #ff4444;
+    border-color: #ff4444;
+}
+
+/* ==================== Advanced Panel ==================== */
+.glass-panel {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: var(--panel-w);
+    max-height: 65vh;
+    /* Limit height for scrolling */
+    background: var(--bg-glass);
+    border: 1px solid var(--border-light);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border-radius: 12px;
+    z-index: 100;
+    color: var(--text-main);
+
+    /* Scroll Logic */
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    /* Animation */
+    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Hide Scrollbar but keep functionality (Chrome) */
+.glass-panel::-webkit-scrollbar {
+    width: 4px;
+}
+
+.glass-panel::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.glass-panel::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 4px;
+}
+
+/* === Sticky Header === */
+.panel-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    /* Highest layer */
+    background: rgba(10, 12, 16, 0.95);
+    /* Opaque background to cover content */
+    border-bottom: 1px solid var(--border-light);
+    padding: 12px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    backdrop-filter: blur(10px);
+}
+
+.panel-header span {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--primary);
+    text-shadow: 0 0 10px var(--primary-dim);
+}
+
+#btn-collapse {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 4px;
+    transition: 0.3s;
+}
+
+#btn-collapse:hover {
+    color: #fff;
+}
+
+/* Content Container */
+#panel-content {
+    padding: 15px;
+    padding-top: 5px;
+}
+
+/* Collapsed State */
+.glass-panel.collapsed {
+    width: auto;
+    height: auto;
+    min-width: 180px;
+    max-height: none;
+    overflow: hidden;
+    padding: 0;
+}
+
+.glass-panel.collapsed #panel-content {
+    display: none;
+}
+
+.glass-panel.collapsed .panel-header {
+    border-bottom: none;
+    background: var(--bg-glass);
+}
+
+/* === Control Styles Optimization === */
+fieldset {
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.02);
+    margin-bottom: 12px;
+    padding: 8px;
+    border-radius: 8px;
+}
+
+legend {
+    font-size: 9px;
+    color: var(--text-dim);
+    padding: 0 4px;
+    font-weight: 600;
+    letter-spacing: 1px;
+}
+
+/* Button Group */
+.button-row,
+.mode-switch,
+.preset-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+/* Generic Button */
+.btn,
+.toggle-btn,
+.mode-btn,
+.preset-btn {
+    flex: 1;
+    min-width: 0;
+    /* Prevent overflow */
+    background: transparent;
+    border: 1px solid var(--border-light);
+    color: var(--text-dim);
+    font-size: 10px;
+    padding: 8px 0;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    font-weight: 600;
+    white-space: nowrap;
+    /* No wrapping */
+}
+
+.btn:hover,
+.toggle-btn:hover {
+    border-color: var(--primary);
+    color: #fff;
+}
+
+/* Active State */
+.btn.active,
+.toggle-btn.active,
+.mode-btn.active {
+    background: var(--primary);
+    color: #000;
+    border-color: var(--primary);
+    box-shadow: 0 0 15px var(--primary-dim);
+}
+
+/* Input Area */
+.mode-content {
+    margin-top: 8px;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+label {
+    font-size: 9px;
+    color: var(--text-dim);
+    margin: 8px 0 4px 0;
+    display: block;
+}
+
+/* Color Picker Beautification */
+.color-wrapper {
+    height: 24px;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid var(--border-light);
+    cursor: pointer;
+}
+
+input[type="color"] {
+    width: 150%;
+    height: 150%;
+    border: none;
+    padding: 0;
+    margin: -10px;
+    cursor: pointer;
+}
+
+/* Select Dropdown */
+select {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-light);
+    color: #fff;
+    padding: 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    outline: none;
+    font-family: inherit;
+}
+
+select:hover {
+    border-color: var(--primary);
+}
+
+/* Slider */
+input[type="range"] {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    appearance: none;
+    margin: 10px 0;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    background: var(--primary);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 10px var(--primary);
+}
+
+/* === File Upload Beautification (Critical Fix) === */
+/* Hide Native Input */
+#img-upload {
+    display: none !important;
+    opacity: 0 !important;
+    position: absolute;
+    z-index: -100;
+}
+
+/* Custom Upload Button */
+.file-upload-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 8px 0;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px dashed var(--border-light);
+    border-radius: 4px;
+    color: var(--text-main);
+    font-size: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.file-upload-label:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: rgba(0, 255, 65, 0.05);
+}
+
+.file-upload-label span {
+    margin-right: 5px;
+    font-size: 12px;
+}
+
+/* Bottom Action */
+.quick-close-btn {
+    width: 100%;
+    padding: 8px;
+    margin-top: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border: none;
+    color: var(--text-dim);
+    font-size: 9px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: 0.2s;
+}
+
+.quick-close-btn:hover {
+    background: rgba(255, 50, 50, 0.1);
+    color: #ff5555;
+}
+
+.reset-btn {
+    width: 100%;
+    background: none;
+    border: none;
+    color: #555;
+    font-size: 9px;
+    margin-top: 5px;
+    cursor: pointer;
+}
+
+.reset-btn:hover {
+    color: #ff4444;
+}
+
+/* Locked Mode: Completely Hide */
+body.locked-mode #drag-handle,
+body.locked-mode #sys-controls,
+body.locked-mode .glass-panel {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(10px);
+}

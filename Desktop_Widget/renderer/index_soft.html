@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>ANTI_VIBE WIDGET</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/addons/p5.sound.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.js"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="css/style_soft.css">
+</head>
+
+<body>
+
+    <button id="btn-lock" title="Lock Interface">🔓</button>
+
+    <div id="drag-handle" title="Drag to Move">
+        <div class="handle-icon">✥</div>
+    </div>
+
+    <div id="sys-controls">
+        <button id="btn-minimize" onclick="minimizeApp()">_</button>
+        <button id="btn-close" onclick="closeApp()">×</button>
+    </div>
+
+    <div id="controls-panel" class="glass-panel collapsed">
+
+        <div class="panel-header">
+            <span>VIBE.OS</span>
+            <button id="btn-collapse" onclick="togglePanel()">[ + ]</button>
+        </div>
+
+        <div id="panel-content">
+
+            <fieldset class="control-group">
+                <legend>INPUTS</legend>
+                <div class="button-row">
+                    <button id="btn-vision" class="toggle-btn active">VISION</button>
+                    <button id="btn-mic" class="toggle-btn">MIC: OFF</button>
+                </div>
+            </fieldset>
+
+            <fieldset class="control-group">
+                <legend>FOCUS GOAL</legend>
+                <div class="mode-switch">
+                    <button id="focus-screen" class="mode-btn active">SCREEN</button>
+                    <button id="focus-reality" class="mode-btn">REALITY</button>
+                </div>
+                <div id="focus-desc"
+                    style="font-size: 8px; color:#666; text-align: center; margin-top: 4px; display:none;">
+                    Keep eyes on screen
+                </div>
+            </fieldset>
+
+            <fieldset class="control-group">
+                <legend>RENDER MODE</legend>
+                <div class="mode-switch">
+                    <button id="mode-fluid" class="mode-btn active">FLUID</button>
+                    <button id="mode-pixel" class="mode-btn">PIXEL</button>
+                </div>
+
+                <div id="controls-fluid" class="mode-content">
+                    <label>ACCENT COLOR</label>
+                    <div class="color-wrapper"><input type="color" id="fluid-color" value="#00ff41"></div>
+                </div>
+
+                <div id="controls-pixel" class="mode-content" style="display:none;">
+                    <label>VISUAL EFFECT</label>
+                    <select id="effect-select">
+                        <option value="WANDERING">WANDERING</option>
+                        <option value="NEBULA">NEBULA</option>
+                        <option value="VORTEX">VORTEX</option>
+                        <option value="GLITCH">GLITCH</option>
+                        <option value="EXPLODE">EXPLODE</option>
+                    </select>
+
+                    <label>SOURCE IMAGE</label>
+                    <label for="img-upload" class="file-upload-label">
+                        <span>📂</span> SELECT IMAGE
+                        <input type="file" id="img-upload" accept="image/*">
+                    </label>
+                </div>
+            </fieldset>
+
+            <fieldset class="control-group">
+                <legend>SYSTEM</legend>
+                <label>THEME</label>
+                <select id="theme-select">
+                    <option value="CYBER">Cyberpunk (Default)</option>
+                    <option value="ZEN">Zen White</option>
+                    <option value="SEA">Deep Sea</option>
+                </select>
+                <label>PARTICLE SCALE</label>
+                <input type="range" id="particle-size" min="50" max="300" value="130">
+            </fieldset>
+
+            <fieldset class="control-group">
+                <legend>PRESETS</legend>
+                <div class="preset-row">
+                    <button id="slot-1" class="preset-btn">I</button>
+                    <button id="slot-2" class="preset-btn">II</button>
+                    <button id="slot-3" class="preset-btn">III</button>
+                </div>
+            </fieldset>
+
+            <button onclick="togglePanel()" class="quick-close-btn">▲ COLLAPSE PANEL</button>
+            <button id="btn-reset" class="reset-btn">// SYSTEM RESET</button>
+        </div>
+    </div>
+
+    <div id="vision-root" style="display:none;">
+        <video id="webcam" autoplay playsinline muted onloadedmetadata="this.play()"></video>
+    </div>
+
+    <script type="module" src="js/vision.js"></script>
+    <script src="js/sketch_soft.js"></script>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+        let isLocked = false;
+        function closeApp() { window.close(); }
+        function minimizeApp() { require('electron').remote.getCurrentWindow().minimize(); }
+        function togglePanel() {
+            const p = document.getElementById('controls-panel');
+            const btn = document.getElementById('btn-collapse');
+            p.classList.toggle('collapsed');
+            btn.innerText = p.classList.contains('collapsed') ? '[ + ]' : '[ - ]';
+            // 收起时重置滚动位置
+            if (p.classList.contains('collapsed')) p.scrollTop = 0;
+        }
+        const lockBtn = document.getElementById('btn-lock');
+        const body = document.body;
+        lockBtn.addEventListener('click', () => {
+            isLocked = !isLocked;
+            if (isLocked) {
+                lockBtn.innerText = '🔒'; lockBtn.classList.add('locked-state'); body.classList.add('locked-mode');
+                ipcRenderer.send('set-ignore-mouse-events', true, { forward: true });
+            } else {
+                lockBtn.innerText = '🔓'; lockBtn.classList.remove('locked-state'); body.classList.remove('locked-mode');
+                ipcRenderer.send('set-ignore-mouse-events', false);
+            }
+        });
+        lockBtn.addEventListener('mouseenter', () => { if (isLocked) ipcRenderer.send('set-ignore-mouse-events', false); });
+        lockBtn.addEventListener('mouseleave', () => { if (isLocked) ipcRenderer.send('set-ignore-mouse-events', true, { forward: true }); });
+    </script>
+</body>
+
+</html>

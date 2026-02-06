@@ -1,0 +1,20 @@
+{
+  "name": "anti-vibe-desktop",
+  "version": "4.1.0",
+  "description": "The Creature - Anti-Vibe Desktop Widget",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [
+    "p5.js",
+    "electron",
+    "widget",
+    "transparency"
+  ],
+  "author": "ANTI_VIBE",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^28.0.0"
+  }
+}

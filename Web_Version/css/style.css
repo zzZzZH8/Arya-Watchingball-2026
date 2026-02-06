@@ -1,0 +1,658 @@
+/* --- VARIABLES & THEMES --- */
+:root {
+    /* CYBERPUNK (Default) */
+    --bg-color: #0a0a0a;
+    --text-color: #00ff41;
+    --primary-color: #00ff41;
+    --panel-bg: rgba(20, 20, 20, 0.6);
+    --panel-border: 1px solid rgba(0, 255, 65, 0.3);
+    --font-main: 'Space Mono', monospace;
+    --border-radius: 4px;
+}
+
+body.theme-zen {
+    /* ZEN */
+    --bg-color: #f4f4f4;
+    --text-color: #333333;
+    --primary-color: #ff5722;
+    --panel-bg: rgba(255, 255, 255, 0.6);
+    --panel-border: 1px solid rgba(0, 0, 0, 0.1);
+    --font-main: 'Helvetica', sans-serif;
+}
+
+body.theme-sea {
+    /* DEEP SEA */
+    --bg-color: #0f172a;
+    --text-color: #94a3b8;
+    --primary-color: #38bdf8;
+    --panel-bg: rgba(15, 23, 42, 0.6);
+    --panel-border: 1px solid rgba(56, 189, 248, 0.3);
+    --font-main: 'Times New Roman', serif;
+}
+
+/* --- RESET --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--font-main);
+    transition: background-color 0.8s ease, color 0.8s ease;
+}
+
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1;
+}
+
+/* --- BOOT SCREEN --- */
+#start-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Radial gradient specific to Cyberpunk default for boot */
+    background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.boot-container {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+#force-start-btn {
+    position: relative;
+    background: transparent;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    padding: 20px 40px;
+    font-family: var(--font-main);
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border-radius: 50px;
+    /* Pill shape */
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+#force-start-btn:hover {
+    background: var(--primary-color);
+    color: var(--bg-color);
+    box-shadow: 0 0 30px var(--primary-color);
+    letter-spacing: 4px;
+    /* Expand on hover */
+}
+
+/* Pulsing Glow Animation */
+.btn-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    border-radius: 50px;
+    box-shadow: 0 0 10px var(--primary-color);
+    animation: pulse 2s infinite;
+    pointer-events: none;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0px rgba(0, 255, 65, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 20px rgba(0, 255, 65, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0px rgba(0, 255, 65, 0);
+    }
+}
+
+.boot-sub {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* --- UI LAYER --- */
+#ui-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+    pointer-events: none;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: opacity 0.5s ease;
+}
+
+/* MINI MODE LOGIC */
+body.mini-mode #ui-layer {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.mini-restore-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 200;
+    background: rgba(0, 0, 0, 0.5);
+    color: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    width: 30px;
+    height: 30px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    display: none;
+    /* Default hidden */
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(4px);
+}
+
+.mini-restore-btn:hover {
+    background: var(--primary-color);
+    color: var(--bg-color);
+    opacity: 1;
+}
+
+body.mini-mode .mini-restore-btn {
+    display: flex;
+    animation: fadeIn 1s ease;
+}
+
+.hud-corner {
+    position: absolute;
+    font-size: 11px;
+    /* Slightly larger readability */
+    opacity: 0.8;
+    line-height: 1.6;
+    text-transform: uppercase;
+    pointer-events: none;
+}
+
+.top-left {
+    top: 30px;
+    left: 30px;
+}
+
+.top-right {
+    top: 30px;
+    right: 30px;
+    text-align: right;
+}
+
+.hud-item {
+    margin-bottom: 4px;
+    font-weight: bold;
+}
+
+/* HUD COLORS */
+.status-active {
+    color: var(--primary-color);
+    text-shadow: 0 0 5px var(--primary-color);
+}
+
+.status-warn {
+    color: #facc15;
+}
+
+/* Yellow */
+.status-off {
+    color: #555;
+}
+
+/* Gray */
+
+.crosshair {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    transform: translate(-50%, -50%);
+    opacity: 0.3;
+}
+
+.crosshair::before,
+.crosshair::after {
+    content: '';
+    position: absolute;
+    background: var(--primary-color);
+}
+
+.crosshair::before {
+    top: 9px;
+    left: 0;
+    width: 20px;
+    height: 1px;
+}
+
+.crosshair::after {
+    top: 0;
+    left: 9px;
+    width: 1px;
+    height: 20px;
+}
+
+
+/* --- CONTROLS PANEL --- */
+.glass-panel {
+    pointer-events: auto;
+    position: absolute;
+    top: 80px;
+    /* Moved down slightly to clear HUD */
+    right: 30px;
+    width: 260px;
+    background: var(--panel-bg);
+    border: var(--panel-border);
+    backdrop-filter: blur(12px);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    max-height: calc(100% - 160px);
+    overflow-y: auto;
+    transition: all 0.5s ease;
+}
+
+.glass-panel::-webkit-scrollbar {
+    width: 0;
+}
+
+.panel-header {
+    font-size: 12px;
+    font-weight: bold;
+    border-bottom: 1px solid var(--primary-color);
+    padding-bottom: 10px;
+    margin-bottom: 5px;
+    letter-spacing: 2px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-mini-btn {
+    background: transparent;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    width: 20px;
+    height: 20px;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 2px;
+    opacity: 0.7;
+}
+
+.header-mini-btn:hover {
+    background: var(--primary-color);
+    color: var(--bg-color);
+    opacity: 1;
+}
+
+fieldset.control-group {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin: 0;
+    padding: 12px;
+    border-radius: 4px;
+}
+
+fieldset.control-group legend {
+    font-size: 10px;
+    padding: 0 5px;
+    color: var(--primary-color);
+    opacity: 0.8;
+}
+
+.button-row,
+.mode-switch,
+.preset-row {
+    display: flex;
+    gap: 8px;
+}
+
+.toggle-btn,
+.mode-btn,
+.preset-btn {
+    flex: 1;
+    background: transparent;
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    padding: 8px;
+    font-size: 10px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s;
+    text-align: center;
+    font-family: var(--font-main);
+}
+
+.toggle-btn:hover,
+.mode-btn:hover,
+.preset-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.toggle-btn.active,
+.mode-btn.active {
+    background: var(--primary-color);
+    color: var(--bg-color);
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
+}
+
+label {
+    display: block;
+    font-size: 10px;
+    margin-bottom: 6px;
+    opacity: 0.7;
+    margin-top: 10px;
+}
+
+label:first-child {
+    margin-top: 0;
+}
+
+select,
+input[type="color"],
+input[type="range"] {
+    margin-bottom: 5px;
+}
+
+select {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--text-color);
+    padding: 6px;
+    border-radius: 2px;
+    font-family: inherit;
+    font-size: 11px;
+    outline: none;
+}
+
+.color-wrapper {
+    height: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+input[type="color"] {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    border: none;
+    cursor: pointer;
+}
+
+input[type="range"] {
+    width: 100%;
+    accent-color: var(--primary-color);
+    cursor: pointer;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    appearance: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    background: var(--primary-color);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.file-upload-btn {
+    display: block;
+    text-align: center;
+    border: 1px dashed rgba(255, 255, 255, 0.3);
+    padding: 10px;
+    font-size: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 10px;
+}
+
+.file-upload-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--primary-color);
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.reset-btn {
+    width: 100%;
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-family: inherit;
+    font-size: 10px;
+    opacity: 0.5;
+    cursor: pointer;
+    margin-top: 10px;
+    text-decoration: underline;
+    letter-spacing: 1px;
+}
+
+.reset-btn:hover {
+    opacity: 1;
+}
+
+/* --- MINI MODE --- */
+body.mini-mode #ui-layer {
+    display: none !important;
+}
+
+/* --- COLLAPSE LOGIC --- */
+.glass-panel.collapsed #panel-content {
+    display: none;
+}
+
+.glass-panel.collapsed {
+    width: auto;
+    min-width: 200px;
+}
+
+/* --- RESPONSIVE LOGIC --- */
+/* Auto-hide UI for small widget windows (< 400px) */
+@media (max-width: 400px),
+(max-height: 400px) {
+
+    .hud-corner,
+    #metaphor-container,
+    .panel-footer-tools {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.5s ease;
+    }
+
+    #mini-exit-btn {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+}
+
+/* Dynamic Font Scaling */
+html {
+    font-size: 14px;
+}
+
+@media (max-width: 800px) {
+    html {
+        font-size: 1.5vmin;
+    }
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-family: monospace;
+    font-size: 14px;
+    cursor: pointer;
+    font-weight: bold;
+    opacity: 0.8;
+}
+
+.icon-btn:hover {
+    opacity: 1;
+}
+
+/* --- MINI MODE RESTORE (Simplified) --- */
+/* Reuse the existing .mini-restore-btn in HTML if available, or style the exit button minimally */
+/* Replacing the big exit pill with a minimal corner button */
+
+#mini-exit-btn {
+    display: none;
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--primary-color);
+    border-radius: 4px;
+    /* Square-ish */
+    cursor: pointer;
+    z-index: 99999;
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 28px;
+    text-align: center;
+    transition: all 0.2s;
+    backdrop-filter: blur(4px);
+}
+
+#mini-exit-btn::after {
+    content: "⤢";
+}
+
+/* Restore Icon */
+
+#mini-exit-btn:hover {
+    background: var(--primary-color);
+    color: var(--bg-color);
+}
+
+body.mini-mode #mini-exit-btn {
+    display: block;
+}
+
+@keyframes slideDown {
+    from {
+        top: -50px;
+        opacity: 0;
+    }
+
+    to {
+        top: 20px;
+        opacity: 1;
+    }
+}
+
+/* Ensure Canvas fills screen */
+canvas {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+}
+
+.mode-content {
+    margin-top: 15px;
+}
+
+/* --- FOOTER QUOTE --- */
+#quote-container {
+    margin-top: auto;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 40px;
+    /* Space from bottom edge */
+    pointer-events: none;
+}
+
+#quote-text {
+    font-size: 1.5rem;
+    /* Larger Cinematic Size */
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: var(--text-color);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    padding: 10px 20px;
+    /* Optional: Slight background for readability if chaos ensues */
+    /* background: rgba(0,0,0,0.3); backdrop-filter: blur(2px); border-radius: 4px; */
+    animation: fadeIn 2s ease;
+}
+
+@media (max-width: 768px) {
+    #quote-text {
+        font-size: 1.1rem;
+    }
+
+    .glass-panel {
+        width: 100%;
+        top: auto;
+        bottom: 0;
+        right: 0;
+        border-radius: 0;
+        max-height: 50%;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
