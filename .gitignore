@@ -17,3 +17,5 @@ renderer/node_modules/
 # Firebase
 .firebase/
 firebase-debug.log
+
+Desktop_Widget/dist_build/

@@ -1,89 +1,167 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to Firebase Hosting</title>
+<html lang="en">
 
-    <!-- update the version number as needed -->
-    <script defer src="/__/firebase/12.9.0/firebase-app-compat.js"></script>
-    <!-- include only the Firebase features as you need -->
-    <script defer src="/__/firebase/12.9.0/firebase-auth-compat.js"></script>
-    <script defer src="/__/firebase/12.9.0/firebase-database-compat.js"></script>
-    <script defer src="/__/firebase/12.9.0/firebase-firestore-compat.js"></script>
-    <script defer src="/__/firebase/12.9.0/firebase-functions-compat.js"></script>
-    <script defer src="/__/firebase/12.9.0/firebase-messaging-compat.js"></script>
-    <script defer src="/__/firebase/12.9.0/firebase-storage-compat.js"></script>
-    <script defer src="/__/firebase/12.9.0/firebase-analytics-compat.js"></script>
-    <script defer src="/__/firebase/12.9.0/firebase-remote-config-compat.js"></script>
-    <script defer src="/__/firebase/12.9.0/firebase-performance-compat.js"></script>
-    <!-- 
-      initialize the SDK after all desired features are loaded, set useEmulator to false
-      to avoid connecting the SDK to running emulators.
-    -->
-    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>THE CREATURE // DARK LAB</title>
 
-    <style media="screen">
-      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
-      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
-      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
-      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
-      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
-      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
-      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
-      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
-      @media (max-width: 600px) {
-        body, #message { margin-top: 0; background: white; box-shadow: none; }
-        body { border-top: 16px solid #ffa100; }
-      }
-    </style>
-  </head>
-  <body>
-    <div id="message">
-      <h2>Welcome</h2>
-      <h1>Firebase Hosting Setup Complete</h1>
-      <p>You're seeing this because you've successfully setup Firebase Hosting. Now it's time to go build something extraordinary!</p>
-      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/addons/p5.sound.min.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body class="theme-cyber">
+
+  <!-- ELECTRON DRAG REGION -->
+  <div id="drag-region"
+    style="position: fixed; top: 0; left: 0; width: 100%; height: 30px; -webkit-app-region: drag; z-index: 99999; pointer-events: none;">
+  </div>
+  <!-- Note: pointer-events: none allows clicking THROUGH the drag region to buttons below, 
+         but technically 'drag' usually requires catching events. 
+         Electron is tricky here. 
+         Better approach: make width smaller or use specific CSS on buttons to be 'no-drag'.
+         Let's stick to user request but ensure it doesn't block. 
+         Actually, if I use pointer-events: none, drag might not work.
+         Lets use the user's exact CSS but make it shorter width to avoid top-right buttons. -->
+
+  <!-- REPLACING THE ABOVE COMMENT WITH ACTUAL CODE -->
+  <div id="drag-region"
+    style="position: fixed; top: 0; left: 0; width: calc(100% - 120px); height: 30px; -webkit-app-region: drag; z-index: 99999;">
+  </div>
+
+  <div id="mini-exit-btn" title="EXIT MINI MODE">✕</div>
+
+  <div id="start-screen">
+    <div class="boot-container">
+      <button id="force-start-btn">
+        <div class="btn-glow"></div>
+        <span class="btn-text">INITIALIZE SYSTEM</span>
+      </button>
+      <p class="boot-sub">USER INTERACTION REQUIRED FOR MEDIA ACCESS</p>
     </div>
-    <p id="load">Firebase SDK Loading&hellip;</p>
+  </div>
 
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const loadEl = document.querySelector('#load');
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
-        // // The Firebase SDK is initialized and available here!
-        //
-        // firebase.auth().onAuthStateChanged(user => { });
-        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
-        // firebase.firestore().doc('/foo/bar').get().then(() => { });
-        // firebase.functions().httpsCallable('yourFunction')().then(() => { });
-        // firebase.messaging().requestPermission().then(() => { });
-        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
-        // firebase.analytics(); // call to activate
-        // firebase.analytics().logEvent('tutorial_completed');
-        // firebase.performance(); // call to activate
-        //
-        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+  <button id="mini-restore-btn" class="mini-restore-btn">⤢</button>
 
-        try {
-          let app = firebase.app();
-          let features = [
-            'auth', 
-            'database', 
-            'firestore',
-            'functions',
-            'messaging', 
-            'storage', 
-            'analytics', 
-            'remoteConfig',
-            'performance',
-          ].filter(feature => typeof app[feature] === 'function');
-          loadEl.textContent = `Firebase SDK loaded with ${features.join(', ')}`;
-        } catch (e) {
-          console.error(e);
-          loadEl.textContent = 'Error loading the Firebase SDK, check the console.';
-        }
-      });
-    </script>
-  </body>
+  <div id="ui-layer">
+
+    <div class="hud-corner top-left">
+      ANTI_VIBE // V.4.1<br> SYS.STATUS: <span id="sys-status">STANDBY</span>
+    </div>
+    <div class="hud-corner top-right">
+      <div id="hud-audio" class="hud-item">AUDIO: MUTED</div>
+      <div id="hud-cam" class="hud-item">CAM: STANDBY</div>
+    </div>
+
+    <div class="crosshair"></div>
+
+    <div id="controls-panel" class="glass-panel">
+      <div class="panel-header">
+        <span class="header-title">VIBE CONSOLE v4.1</span>
+        <button id="btn-collapse" class="icon-btn" title="COLLAPSE">[ - ]</button>
+      </div>
+
+      <div id="panel-content">
+
+        <fieldset class="control-group">
+          <legend>SENSORS</legend>
+          <div class="button-row">
+            <button id="btn-vision" class="toggle-btn active">VISION: ON</button>
+            <button id="btn-mic" class="toggle-btn">MIC: OFF</button>
+          </div>
+        </fieldset>
+
+        <fieldset class="control-group">
+          <legend>FOCUS GOAL</legend>
+          <div class="mode-switch">
+            <button id="focus-screen" class="mode-btn active">💻 SCREEN</button>
+            <button id="focus-reality" class="mode-btn">📖 REALITY</button>
+          </div>
+          <div id="focus-desc" style="font-size: 9px; opacity:0.6; text-align: center; margin-top: 5px;">
+            Keep eyes on screen to stabilize.
+          </div>
+        </fieldset>
+
+        <fieldset class="control-group">
+          <legend>MODE</legend>
+          <div class="mode-switch">
+            <button id="mode-fluid" class="mode-btn active">FLUID</button>
+            <button id="mode-pixel" class="mode-btn">PIXEL</button>
+          </div>
+
+          <div id="controls-fluid" class="mode-content">
+            <label>COLOR</label>
+            <div class="color-wrapper">
+              <input type="color" id="fluid-color" value="#00ff41">
+            </div>
+          </div>
+
+          <div id="controls-pixel" class="mode-content" style="display:none;">
+            <label>EFFECT</label>
+            <select id="effect-select">
+              <option value="WANDERING">WANDERING</option>
+              <option value="NEBULA">NEBULA</option>
+              <option value="VORTEX">VORTEX</option>
+              <option value="GLITCH">GLITCH</option>
+              <option value="EXPLODE">EXPLODE</option>
+            </select>
+
+            <label>IMAGE UPLOAD</label>
+            <label for="img-upload" class="file-upload-btn">[ SELECT IMAGE ]</label>
+            <input type="file" id="img-upload" accept="image/*">
+          </div>
+        </fieldset>
+
+        <fieldset class="control-group">
+          <legend>TWEAKS</legend>
+          <label>THEME</label>
+          <select id="theme-select">
+            <option value="CYBER">Cyberpunk (Default)</option>
+            <option value="ZEN">Zen White</option>
+            <option value="SEA">Deep Sea</option>
+          </select>
+
+          <label>PARTICLE SIZE</label>
+          <input type="range" id="particle-size" min="100" max="400" value="200">
+        </fieldset>
+
+        <fieldset class="control-group">
+          <legend>QUICK SLOTS</legend>
+          <div class="preset-row">
+            <button id="slot-1" class="preset-btn" title="Zen Fluid">I</button>
+            <button id="slot-2" class="preset-btn" title="Matrix Glitch">II</button>
+            <button id="slot-3" class="preset-btn" title="Abyss Fluid">III</button>
+          </div>
+        </fieldset>
+
+        <div class="panel-footer-tools"
+          style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px;">
+          <button id="btn-mini-mode" class="toggle-btn" style="width: 100%; border-style: dashed;">⤢ HIDE UI
+            (MINI)</button>
+        </div>
+
+        <button id="btn-reset" class="reset-btn">// FACTORY RESET</button>
+      </div>
+    </div>
+
+    <div id="quote-container">
+      <div id="quote-text"></div>
+    </div>
+
+  </div>
+
+  <div id="vision-root" style="display:none;">
+    <video id="webcam" autoplay playsinline></video>
+  </div>
+  <script type="module" src="js/vision.js"></script>
+  <script src="js/sketch.js"></script>
+</body>
+
 </html>
